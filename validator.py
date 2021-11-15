@@ -1,4 +1,14 @@
+# python validator.py input.txt output.txt
+
+import json
 import re
+import argparse
+from tqdm import tqdm
+
+parser = argparse.ArgumentParser()
+parser.add_argument('input', help='Get path file input')
+parser.add_argument('output', help='Get path file output')
+args = parser.parse_args()
 
 
 class validator:
@@ -61,3 +71,68 @@ class validator:
             if re.match(pattern, address):
                 return True
         return False
+
+
+data = json.load(open(args.input, encoding='windows-1251'))
+
+valid_data = list()
+telephone = 0
+height = 0
+inn = 0
+passport_number = 0
+occupation = 0
+age = 0
+political_views = 0
+worldview = 0
+address = 0
+
+with tqdm(total=len(data)) as progressbar:
+    for person in data:
+        temp = True
+        if not validator.check_telephone(person["telephone"]):
+            telephone += 1
+            temp = False
+        if not validator.check_height(person["height"]):
+            height += 1
+            temp = False
+        if not validator.check_inn(person['inn']):
+            inn += 1
+            temp = False
+        if not validator.check_passport(person['passport_number']):
+            passport_number += 1
+            temp = False
+        if not validator.check_occupation(person["occupation"]):
+            occupation += 1
+            temp = False
+        if not validator.check_age(person['age']):
+            age += 1
+            temp = False
+        if not validator.check_views(person['political_views']):
+            political_views += 1
+            temp = False
+        if not validator.check_worldview(person['worldview']):
+            worldview += 1
+            temp = False
+        if not validator.check_address(person["address"]):
+            address += 1
+            temp = False
+        if temp:
+            valid_data.append(person)
+        progressbar.update(1)
+
+out_put = open(args.output, 'w', encoding='utf-8')
+data_for_output = json.dumps(valid_data, ensure_ascii=False, indent=4)
+out_put.write(data_for_output)
+out_put.close()
+
+print(f'Число валидных записей: {len(valid_data)}')
+print(f'Число невалидных записей: {len(data) - len(valid_data)}')
+print(f'  - Число невалидных номеров телефона:  {telephone}')
+print(f'  - Число невалидных ростов: {height}')
+print(f'  - Число невалидных ИНН: {inn}')
+print(f'  - Число невалидных номеров паспорта: {passport_number}')
+print(f'  - Число невалидных занятостей {occupation}')
+print(f'  - Число невалидных возрастов: {age}')
+print(f'  - Число невалидных политических взглядов: {political_views}')
+print(f'  - Число невалидных мировоззрений: {worldview}')
+print(f'  - Число невалидных адрессов: {address}')
