@@ -23,11 +23,11 @@ class validator:
             return True
         return False
 
-    def check_height(weight: str) -> bool:
-        if type(weight) != str:
+    def check_height(height: str) -> bool:
+        if type(height) != str:
             return False
         pattern = '[12]\.\d'
-        if re.match(pattern, weight):
+        if re.match(pattern, height):
             return True
         return False
 
